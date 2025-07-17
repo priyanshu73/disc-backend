@@ -14,17 +14,45 @@ const getAllAdjectives = async (req, res) => {
   }
 };
 
+const getDiscQuestions = async (req, res) => {
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute('SELECT question_number, text FROM adjectives ORDER BY question_number, id');
+    
+    // Group adjectives by question number
+    const questionsMap = {};
+    rows.forEach(row => {
+      if (!questionsMap[row.question_number]) {
+        questionsMap[row.question_number] = [];
+      }
+      questionsMap[row.question_number].push(row.text);
+    });
+    
+    // Convert to the desired format
+    const discQuestions = Object.keys(questionsMap).map(questionNumber => ({
+      id: parseInt(questionNumber),
+      adjectives: questionsMap[questionNumber]
+    }));
+    
+    res.json({ success: true, data: discQuestions });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  } finally {
+    if (connection) await connection.end();
+  }
+};
+
 const submitAnswers = async (req, res) => {
   let connection;
   try {
     const answers = req.body;
-    console.log(answers);
+  
 
-    // if (!answers || typeof answers !== 'object') {
-    //   return res.status(400).json({ success: false, error: 'Invalid answers format' });
-    // }
+    if (!answers || typeof answers !== 'object') {
+      return res.status(400).json({ success: false, error: 'Invalid answers format' });
+    }
 
-    console.log("adjectives");
     connection = await mysql.createConnection(dbConfig);
     
     // Get all adjectives for lookup
@@ -34,19 +62,22 @@ const submitAnswers = async (req, res) => {
     // Create lookup map
     const adjectiveMap = {};
     adjectives.forEach(adj => {
+      
       adjectiveMap[adj.text] = {
         most_shape: adj.most_shape,
         least_shape: adj.least_shape
       };
     });
-
-    // Process answers and extract shapes
+    
     const mostShapes = [];
     const leastShapes = [];
     
     for (let questionNum = 1; questionNum <= 28; questionNum++) {
+      
       const questionKey = questionNum.toString();
-      const answer = answers[questionKey];
+      
+      
+      const answer = answers.answers[questionKey];
       
       if (!answer || !answer.most || !answer.least) {
         return res.status(400).json({ 
@@ -54,9 +85,12 @@ const submitAnswers = async (req, res) => {
           error: `Missing answer for question ${questionNum}` 
         });
       }
-
-      const mostAdjective = adjectiveMap[answer.most];
-      const leastAdjective = adjectiveMap[answer.least];
+     
+      const answerMost = answer.most;
+      const answerLeast = answer.least;
+      
+      const mostAdjective = adjectiveMap[answerMost];
+      const leastAdjective = adjectiveMap[answerLeast];
       
       if (!mostAdjective || !leastAdjective) {
         return res.status(400).json({ 
@@ -98,4 +132,4 @@ const submitAnswers = async (req, res) => {
   }
 };
 
-export default { getAllAdjectives, submitAnswers }; 
+export default { getAllAdjectives, submitAnswers, getDiscQuestions }; 
