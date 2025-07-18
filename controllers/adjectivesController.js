@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import dbConfig from '../dbConfig.js';
+import { getSegment } from '../utils/disc_info.js';
 
 const getAllAdjectives = async (req, res) => {
   let connection;
@@ -58,7 +59,6 @@ const submitAnswers = async (req, res) => {
     // Get all adjectives for lookup
     const [adjectives] = await connection.execute('SELECT text, most_shape, least_shape FROM adjectives');
     
-    console.log(adjectives);
     // Create lookup map
     const adjectiveMap = {};
     adjectives.forEach(adj => {
@@ -117,11 +117,29 @@ const submitAnswers = async (req, res) => {
     const mostCounts = countShapes(mostShapes);
     const leastCounts = countShapes(leastShapes);
 
+    
+    const diff = {
+      Z: (mostCounts.Z || 0) - (leastCounts.Z || 0), // D
+      S: (mostCounts.S || 0) - (leastCounts.S || 0), // i
+      T: (mostCounts.T || 0) - (leastCounts.T || 0), // S
+      '*': (mostCounts['*'] || 0) - (leastCounts['*'] || 0) // C
+    };
+
+   
+    const code = [
+      getSegment('D', diff.Z),
+      getSegment('i', diff.S),
+      getSegment('S', diff.T),
+      getSegment('C', diff['*'])
+    ].join('');
+
     res.json({ 
       success: true, 
       data: {
         most: mostCounts,
-        least: leastCounts
+        least: leastCounts,
+        diff,
+        code
       }
     });
 

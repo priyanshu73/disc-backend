@@ -32,6 +32,20 @@ async function upsertTables() {
       )
     `);
 
+    // Create users table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+        user_id INT AUTO_INCREMENT PRIMARY KEY,
+        firstname VARCHAR(50) NOT NULL,
+        lastname VARCHAR(50) NOT NULL,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        class_year INT NOT NULL,
+        semester ENUM('SPRING', 'FALL') NOT NULL,
+        hasReset BOOLEAN NOT NULL DEFAULT FALSE
+      )
+    `);
+
     console.log('Tables upserted successfully.');
   } catch (err) {
     console.error('Error upserting tables:', err.message);
