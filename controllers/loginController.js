@@ -29,7 +29,7 @@ export async function login(req, res) {
     }
     // Issue JWT and set as cookie
     const token = jwt.sign(
-      { user_id: user.user_id, username: user.username, firstname: user.firstname },
+      { user_id: user.user_id, username: user.username },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
