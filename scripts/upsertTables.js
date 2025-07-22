@@ -56,6 +56,25 @@ async function upsertTables() {
       )
     `);
 
+    // Create ClassicProfilePatterns table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS ClassicProfilePatterns (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        pid VARCHAR(2) NOT NULL,
+        emotions TEXT,
+        goal TEXT,
+        judges_others_by TEXT,
+        influences_others_by TEXT,
+        value_to_organization TEXT,
+        overuses TEXT,
+        under_pressure TEXT,
+        fears TEXT,
+        would_increase_effectiveness_through TEXT,
+        general_description TEXT NOT NULL,
+        FOREIGN KEY (pid) REFERENCES pattern(pid) ON DELETE RESTRICT ON UPDATE CASCADE
+      )
+    `);
+
     // Insert two classes for 2025 (S and F) with random instructor names
     // Removed from upsertTables.js as per new structure
 

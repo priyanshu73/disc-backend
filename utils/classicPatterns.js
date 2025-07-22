@@ -1,0 +1,211 @@
+export const patterns = {
+    A1: {
+      name: "Achiever",
+      emotions: "is industrious and diligent; displays frustration",
+      goal: "personal accomplishments, sometimes at the expense of the group's goal",
+      judgesOthersBy: "ability to achieve concrete results",
+      influencesOthersBy: "accountability for own work",
+      valueToOrganization: "sets and completes key result areas for self",
+      overuses: "self-reliance; absorption in the task",
+      underPressure: "becomes frustrated and impatient; becomes more of a 'do-er' and less of a 'delegator'",
+      fears: "others with competing or inferior work standards affecting results",
+      wouldIncreaseEffectivenessThrough: "less 'either-or' thinking; clearer task priorities; consideration of optional approaches; willingness to compromise short-term for long-range benefits",
+      generalDescription: "The motivation of Achievers is largely internal and flows from deeply felt personal goals. Their commitment to their own goals prevents them from automatically accepting the group's goals. Achievers need to see how they can blend their personal goals with the organization's goals. By retaining control over the direction of their lives, Achievers develop a strong sense of accountability. Achievers demonstrate a keen interest in their work and an intense, continual pursuit of accomplishment. They have a high opinion of their work and may hesitate to delegate tasks when under pressure. Instead, they take on the work themselves to ensure that things are done right. When they delegate, they have a tendency to take back the task if it does not go according to their expectations. Their guiding premise is, 'If I succeed, I want the credit; if I fail, I will take the blame.' An Achiever should communicate more with others to expand their thinking beyond either 'I have to do it myself' or 'I want all the credit.' They may need help in finding new approaches for achieving their desired results. Achievers function at peak efficiency, and they expect recognition equal to their contribution-high wages in for-profit organizations and leadership positions in other groups."
+    },
+    A2: {
+      name: "Agent",
+      emotions: "accepts affection; rejects aggression",
+      goal: "group acceptance",
+      judgesOthersBy: "commitment to tolerate and include everyone",
+      influencesOthersBy: "empathy; friendship",
+      valueToOrganization: "supports, harmonizes, empathizes; focuses on service",
+      overuses: "kindness",
+      underPressure: "becomes persuasive, using information or key friendships if necessary",
+      fears: "dissent; conflict",
+      wouldIncreaseEffectivenessThrough: "strength in the realization of who they are and what they can do; firmness and self-assertion; ability to say 'no' when appropriate",
+      generalDescription: "Agents are attentive to both the human relations and task aspects of their work situation. Empathetic and supportive, they are good listeners and known for their willing ear. Agents make people feel wanted and needed. Because Agents respond to others' needs, people do not fear being rejected by Agents. Agents offer friendship and are willing to perform services for others. Agents have excellent potential for organizing and completing tasks effectively. Agents naturally promote harmony and teamwork and are particularly good at doing for others what they find difficult to do for themselves. Agents fear conflict and dissent. Their supportive approach may enable others to tolerate a situation rather than encouraging them to engage in active problem-solving. In addition, the Agent's tendency to adopt a 'low profile' - instead of having open confrontations with aggressive individuals - may be perceived as a lack of 'toughness.' Although they are concerned with fitting into the group, Agents have a fair degree of independence."
+    },
+    A3: {
+      name: "Appraiser",
+      emotions: "is driven to look good",
+      goal: "'victory' with flair",
+      judgesOthersBy: "ability to initiate activities",
+      influencesOthersBy: "competitive recognition",
+      valueToOrganization: "accomplishes goals with the team",
+      overuses: "authority; ingenuity",
+      underPressure: "becomes restless, critical, impatient",
+      fears: "'loss' or 'failure'; others' disapproval",
+      wouldIncreaseEffectivenessThrough: "individual follow-through; empathy when showing disapproval; steadier pace",
+      generalDescription: "Appraisers make creative ideas serve practical purposes. They use direct methods to accomplish results. Appraisers are competitive, but other people tend to view them as assertive rather than aggressive because Appraisers are considerate of others. Instead of giving orders or commands, Appraisers involve people in the task through persuasion. They elicit the cooperation of those around them by explaining the rationale for the proposed activities. Appraisers help others to visualize the steps needed in order to accomplish results. Appraisers usually speak from a detailed plan of action that they have developed in order to ensure an orderly progression toward results. In their eagerness to win, Appraisers can become impatient when their standards are not maintained or when extensive follow-through is required. Appraisers are good critical thinkers. They are verbal in their criticisms and their words occasionally may be caustic. Appraisers have a better control of the situation if they relax and pace themselves. A helpful axiom to achieve this is, 'You win some, you lose some.'"
+    },
+    C1: {
+      name: "Counselor",
+      emotions: "is approachable; shows affection and understanding",
+      goal: "friendship; happiness",
+      judgesOthersBy: "positive acceptance of others; ability to look for the good in people",
+      influencesOthersBy: "personal relationships; 'open door' policy",
+      valueToOrganization: "remains stable and predictable; develops a wide range of friendships; listens to others' feelings",
+      overuses: "indirect approach; tolerance",
+      underPressure: "becomes overly flexible and intimate; is too trusting without differentiating among people",
+      fears: "pressuring people; being accused of causing harm",
+      wouldIncreaseEffectivenessThrough: "attention to realistic deadlines; initiative to complete the task",
+      generalDescription: "Counselors are particularly effective at solving people's problems. They impress others with their warmth, empathy, and understanding. Their optimism makes it easy to look for the good in others. Counselors prefer to deal with others by building long-standing relationships. As a good listener with a willing ear for problems, a Counselor offers suggestions gently and refrains from imposing his or her ideas on others. Counselors tend to be overly tolerant and patient with non-producers. Under pressure, they may have difficulty confronting performance problems. Counselors may be indirect when issuing orders, making demands, or disciplining others. By adopting the attitude that 'people are important,' Counselors may place less emphasis on task accomplishment. They sometimes require help in setting and meeting realistic deadlines. Counselors often take criticism as a personal affront, but they respond well to attention and compliments for well-done assignments. When in a position of responsibility, Counselors tend to be attentive to the quality of working conditions and provide adequate recognition for members of their group."
+    },
+    C2: {
+      name: "Creative",
+      emotions: "accepts aggression; remains expressionless",
+      goal: "dominance; unique accomplishments",
+      judgesOthersBy: "personal standards; progressive ideas for accomplishing tasks",
+      influencesOthersBy: "ability to pace development of systems and innovative approach",
+      valueToOrganization: "initiates or designs changes",
+      overuses: "bluntness; critical or condescending attitude",
+      underPressure: "becomes bored with routine work; sulks when restrained; acts independently",
+      fears: "lack of influence; failure to achieve their standards",
+      wouldIncreaseEffectivenessThrough: "warmth; tactful communication; effective team cooperation; recognition of existing sanctions",
+      generalDescription: "Persons with a Creative Pattern display opposing forces in their behavior. Their desire for tangible results is counterbalanced by an equally strong drive for perfection, and their aggressiveness is tempered by sensitivity. Although they think and react quickly, they are restrained by the wish to explore all possible solutions before making a decision. Creative persons exhibit foresight when focusing on projects, and they bring about change. Since individuals with a Creative Pattern have a drive for perfection and demonstrate considerable planning ability, the changes they make are likely to be sound, but the method they choose may lack attention to interpersonal relationships. Creative persons want freedom to explore, and they want the authority to examine and retest findings. They can make daily decisions quickly but be extremely cautious when making bigger decisions: 'Should I accept that promotion?' 'Should I move to another location?' In their drive for results and perfection, Creative persons may not be concerned about social poise. As a result, they may be cool, aloof, or blunt."
+    },
+    D1: {
+      name: "Developer",
+      emotions: "is concerned with meeting personal needs",
+      goal: "new opportunities",
+      judgesOthersBy: "ability to meet the Developer's standards",
+      influencesOthersBy: "finding solutions to problems; projecting a personal sense of power",
+      valueToOrganization: "avoids 'passing the buck'; seeks new or innovative problem-solving methods",
+      overuses: "control over people and situations to accomplish his or her own results",
+      underPressure: "works alone to complete tasks; is belligerent if individualism is threatened or challenging opportunities disappear",
+      fears: "boredom; loss of control",
+      wouldIncreaseEffectivenessThrough: "patience, empathy; participation and collaboration with others; follow-through and attention to quality control",
+      generalDescription: "Developers tend to be strong-willed individualists, continually seeking new horizons. As self-reliant, independent thinkers, they prefer to find their own solutions. Relatively free of the constraining influence of the group, Developers are able to bypass convention and often create innovative solutions. Although they most often use direct, forceful behavior, Developers can also shrewdly manipulate people and situations. When required to participate with others in situations that limit their individualism, Developers tend to become belligerent. They are persistent when pursuing the results they desire and will do whatever is necessary to overcome obstacles to success. In addition, they have high expectations of others and can be critical when their standards are not met. Developers are most interested in achieving their own goals. Opportunities for advancement and challenge are important to them. By focusing on results, they may lack empathy or seem uncaring by dismissing others' concerns."
+    },
+    I1: {
+      name: "Inspirational",
+      emotions: "accepts aggression; downplays need for affection",
+      goal: "control of their environment or audience",
+      judgesOthersBy: "projection of personal strength, character, and social power",
+      influencesOthersBy: "charm, direction, intimidation; use of rewards",
+      valueToOrganization: "acts as a 'people mover'; initiates, demands, compliments, disciplines",
+      overuses: "attitude that 'the ends justify the means'",
+      underPressure: "becomes manipulative, quarrelsome or belligerent",
+      fears: "weak behavior; loss of social status",
+      wouldIncreaseEffectivenessThrough: "genuine sensitivity; willingness to help others to succeed in their own personal development",
+      generalDescription: "Persons with the Inspirational Pattern consciously attempt to modify the thoughts and actions of others. They want to control their environment. They are astute at identifying and manipulating an individual's existing motives in order to direct that person's behavior toward a predetermined end. Inspirational persons are clear about the results they want, but they do not always immediately verbalize them. They state the results they want only after they have primed the other person, offering friendship to those who desire acceptance, authority to those who seek power, and security to those who want a predictable environment. Inspirational persons can be charming in their interactions. They are persuasive when they want help in repetitive and time-consuming details. People often experience a conflicting sensation by feeling drawn to Inspirational people and yet being curiously distanced. Others may feel 'used' by Inspirational persons' powers of manipulation. Although they sometimes inspire fear in others and override their decisions, Inspirational persons are generally well liked by co-workers because they use their considerable verbal skills to persuade others whenever possible. Inspirational persons clearly prefer to accomplish goals through cooperation and persuasion instead of domination."
+    },
+    I2: {
+      name: "Investigator",
+      emotions: "is dispassionate; demonstrates self-discipline",
+      goal: "power through formal roles and positions of authority",
+      judgesOthersBy: "use of factual information",
+      influencesOthersBy: "determination, tenacity",
+      valueToOrganization: "offers comprehensive follow-through; works determinedly on tasks individually or in a small group",
+      overuses: "bluntness; suspicion of others",
+      underPressure: "tends to internalize conflict; holds on to grudges",
+      fears: "involvement with the masses; responsibility to sell abstract ideas",
+      wouldIncreaseEffectivenessThrough: "flexibility; acceptance of others; personal involvement with others",
+      generalDescription: "Objective and analytical, Investigators are dispassionate 'anchors of reality.' Generally undemonstrative, they calmly and steadily pursue an independent path toward a fixed goal. Investigators are successful at many things, not because of versatility but due to their dogged determination to follow through. They seek a clear purpose or goal from which they can develop an orderly plan and organize their actions. Once a project has begun, Investigators fight tenaciously to achieve their objectives. Intervention is sometimes needed to change their direction. As a result, they can be perceived as stubborn and opinionated. Investigators do well with challenging technical assignments in which they can use actual data to interpret the information and draw conclusions. They respond to logic rather than emotion. When selling or marketing an idea, they are most successful with a concrete product. Investigators are not especially interested in pleasing people, and they prefer to work alone. They can be perceived as cold, blunt, and tactless. Because they value their own thinking ability, Investigators evaluate others by how they use facts and logic. To increase their effectiveness in personal interactions, Investigators need to develop a greater understanding of other people, especially others' emotions."
+    },
+    O1: {
+      name: "Objective Thinker",
+      emotions: "rejects interpersonal aggression",
+      goal: "correctness",
+      judgesOthersBy: "ability to think logically",
+      influencesOthersBy: "use of facts, data, and logical arguments",
+      valueToOrganization: "defines and clarifies; obtains, evaluates, and tests information",
+      overuses: "analysis",
+      underPressure: "becomes worrisome",
+      fears: "irrational acts; ridicule",
+      wouldIncreaseEffectivenessThrough: "self-disclosure; public discussion of their insights and opinions",
+      generalDescription: "Objective Thinkers tend to have highly developed critical thinking abilities. They emphasize the importance of facts when drawing conclusions and planning actions, and they seek correctness and accuracy in everything they do. To manage their work activities effectively, Objective Thinkers often combine intuitive information with the facts they have gathered. When in doubt about a course of action, they avoid public failure by preparing meticulously. For example, Objective Thinkers will master a new skill privately before they use it in a group activity. Objective Thinkers prefer to work with people who, like themselves, are interested in maintaining a peaceful work environment. Considered shy by some, they may be reticent in expressing their feelings. They are particularly uncomfortable with aggressive people. Despite being mild-mannered, Objective Thinkers have a strong need to control their environment. They tend to exert this control indirectly by requiring others to adhere to rules and standards. Objective Thinkers are concerned with the 'right' answer and may have trouble making decisions in ambiguous situations. With their tendency to worry, they may get bogged down in 'analysis paralysis.' When they make a mistake, Objective Thinkers often hesitate to acknowledge it. Instead, they immerse themselves in a search for information that supports their position."
+    },
+    O2: {
+      name: "Overshift",
+      generalDescription: "Before you go further, review your profile graph scores for the possibility of error. An Overshift Pattern occurs when all four plotting points are positioned in the upper portion of the graph. This indicates that the person considers all four behavioral styles to be of equal importance. As a result, the shape of the profile does not match any of the commonly occurring Classical Profile Patterns. Classical Profile combinations of high and low plotting points, when the Overshift Pattern has only high plotting points, are not considered an Overshift Pattern. When an Overshift Pattern occurs on Graph II, it may be helpful to retake the profile with a clearer focus."
+    },
+    P1: {
+      name: "Perfectionist",
+      emotions: "displays competence; is restrained and cautious",
+      goal: "stability; predictable accomplishments",
+      judgesOthersBy: "precise standards",
+      influencesOthersBy: "attention to detail; accuracy",
+      valueToOrganization: "is conscientious; maintains standards; controls quality",
+      overuses: "procedures and 'fail-safe' controls; overdependence on people, products, and processes that have worked in past",
+      underPressure: "becomes tactful and diplomatic",
+      fears: "antagonism",
+      wouldIncreaseEffectivenessThrough: "role flexibility; independence and interdependence; belief in self-worth",
+      generalDescription: "Perfectionists are systematic, precise thinkers and workers who follow procedure in both their personal and work lives. Extremely conscientious, they are diligent in work that requires attention to detail and accuracy. Because they desire stable conditions and predictable activities, Perfectionists are most comfortable in a clearly defined work environment. They want specifics on work expectations, time requirements, and evaluation procedures. Perfectionists may become bogged down in the details of the decision-making process. They can make major decisions but may be criticized for the amount of time they take to gather and analyze information. Although they like to hear the opinions of their managers, Perfectionists take risks when they have facts that they can interpret and use to draw conclusions. Perfectionists evaluate themselves and others by precise standards for achieving concrete results while adhering to standard operating procedures. This conscientious attention to standards and quality is valuable to the organization. Perfectionists may define their worth too much by what they do and not by who they are as people. As a result, they tend to react to personal compliments by thinking, 'What does this person want?' By accepting sincere compliments, Perfectionists can increase their self-confidence."
+    },
+    P2: {
+      name: "Persuader",
+      emotions: "trusts others; is enthusiastic",
+      goal: "authority and prestige; status symbols",
+      judgesOthersBy: "ability to express themselves; flexibility",
+      influencesOthersBy: "friendly, open manner; verbal skills",
+      valueToOrganization: "sells and closes; delegates responsibility; is poised and confident",
+      overuses: "enthusiasm; selling ability; optimism",
+      underPressure: "becomes indecisive and is easily persuaded; becomes organized in order to look good",
+      fears: "fixed environment; complex relationships",
+      wouldIncreaseEffectivenessThrough: "challenging assignments; attention to task-oriented service and key details; objective data analysis",
+      generalDescription: "Persuaders work with people, striving to be friendly while pushing forward their own objectives. Outgoing and interested in people, Persuaders have the ability to gain the respect and confidence of various types of people. Persuaders can impress their thoughts on others, drawing people to them and retaining them as clients or friends. This ability is particularly helpful when Persuaders sell themselves or their ideas to win positions of authority. The most favorable environment for Persuaders includes working with people, receiving challenging assignments, and experiencing a variety of work activities that require mobility. They seek work assignments that will give them the opportunity to look good. As a result of their naturally positive outlook, Persuaders may be too optimistic about a project's results and others' potential. Persuaders also tend to overestimate their ability to change the behavior of others. Although Persuaders desire freedom from routine and regimentation, they need to receive analytical data on a systematic basis. Once alerted to the importance of the 'little things,' Persuaders can use the information to balance their enthusiasm with a realistic assessment of the situation."
+    },
+    P3: {
+      name: "Practitioner",
+      emotions: "wants to keep up with others in effort and technical performance",
+      goal: "personal growth",
+      judgesOthersBy: "self-discipline; position and promotions",
+      influencesOthersBy: "confidence in their ability to master new skills; development of 'proper' procedures and actions",
+      valueToOrganization: "is skilled in technical and people problem-solving; displays proficiency and specialization",
+      overuses: "overattention to personal objectives; unrealistic expectations of others",
+      underPressure: "becomes restrained; is sensitive to criticism",
+      fears: "being too predictable; no recognition as an 'expert'",
+      wouldIncreaseEffectivenessThrough: "genuine collaboration for common benefit; delegation of key tasks to appropriate individuals",
+      generalDescription: "Practitioners value proficiency in specialized areas. Spurred on by a desire to be 'good at something,' they carefully monitor their own work performance. Although their aim is to be 'the' expert in an area, Practitioners frequently give the impression that they know something about everything. This image is particularly strong when they express their knowledge on a variety of subjects. As Practitioners interact with others, they project a relaxed, diplomatic, and easygoing style. This congenial attitude may change quickly in their own work area when they become intensely focused in order to meet high standards for performance. Practitioners evaluate others on the basis of their self-discipline as measured by their daily performance. They have high expectations for themselves and others, and they tend to express their disappointment. Although they naturally concentrate on developing an organized approach to work and increasing their own skills, Practitioners also need to help others to build skills. In addition, they need to increase their appreciation of those who contribute to the work effort even though they may not use the Practitioner's preferred methods."
+    },
+    P4: {
+      name: "Promoter",
+      emotions: "is willing to accept others",
+      goal: "approval, popularity",
+      judgesOthersBy: "verbal skills",
+      influencesOthersBy: "praise, opportunities, favors",
+      valueToOrganization: "relieves tension; promotes projects and people, including him or herself",
+      overuses: "praise, optimism",
+      underPressure: "becomes careless and sentimental; is disorganized",
+      fears: "loss of social acceptance and self-worth",
+      wouldIncreaseEffectivenessThrough: "control of time; objectivity; sense of urgency; emotional control; follow-through on promises and tasks",
+      generalDescription: "Promoters have an extensive network of contacts. They are usually gregarious and socially adept, and they develop friendships easily. They rarely antagonize others intentionally. Promoters seek favorable social environments where they can develop and maintain their contacts. Verbally skilled, they promote their own ideas and create enthusiasm for others' projects. With their wide range of contacts, Promoters have access to the people who can help them. Since Promoters prefer to participate and interact with others in activities, they may be less interested in task accomplishment. They may continue to seek out any situation that involves meeting people and socializing even though their job requires attention to more solitary activities. They thrive on meetings, committees, and conferences. Usually optimistic, Promoters tend to overestimate the ability of others. They often leap to favorable conclusions without considering all the facts. Promoters will learn to be objective and emphasize results with coaching and direction. Time management may present challenges for Promoters. By setting a time limit on conversation and discussion, they can remind themselves of the urgency of 'closing' and accomplishing the task."
+    },
+    R1: {
+      name: "Result Oriented",
+      emotions: "verbalizes ego strength; displays rugged individualism",
+      goal: "dominance and independence",
+      judgesOthersBy: "ability to accomplish tasks quickly",
+      influencesOthersBy: "force of character; diligence",
+      valueToOrganization: "persistence; doggedness",
+      overuses: "impatience; 'win-lose' competition",
+      underPressure: "becomes critical and fault-finding; resists participating with a team; may overstep boundaries",
+      fears: "others will take advantage of them; slowness, especially in task activities; being a pushover",
+      wouldIncreaseEffectivenessThrough: "explanation of their reasoning and consideration of other views and ideas about goals and solutions to problems; genuine concern for others; patience and humility",
+      generalDescription: "Result-Oriented people display self-confidence, which some may interpret as arrogance. They actively seek opportunities that test and develop their abilities to accomplish results. Result-Oriented persons like difficult tasks, competitive situations, unique assignments, and 'important' positions. They undertake responsibilities with an air of self-importance and display self-satisfaction once they have finished. Result-Oriented people tend to avoid constraining factors, such as direct controls, time-consuming details, and routine work. Because they are forceful and direct, they may have difficulties with others. Result-Oriented people prize their independence and may become restless when involved with group activities or committee work. Although Result-Oriented people generally prefer to work alone, they may persuade others to support their efforts, especially when completing routine activities. Result-Oriented people are quick thinkers, and they are impatient and critical toward those who are not. They evaluate others on their ability to get results. Result-Oriented people are determined and persistent even in the face of antagonism. They take command of the situation when necessary, whether or not they are in charge. In their uncompromising drive for results, they may appear blunt and uncaring."
+    },
+    S1: {
+      name: "Specialist",
+      emotions: "is calculatingly moderate; accommodates others",
+      goal: "maintenance of the status quo; controlled environment",
+      judgesOthersBy: "friendship standards; competence",
+      influencesOthersBy: "consistent performance; accommodating others",
+      valueToOrganization: "plans short term; is predictable, consistent; maintains steady pace",
+      overuses: "modesty; low risk-taking; passive resistance to innovation",
+      underPressure: "becomes adaptable to those in authority and thinks with the group",
+      fears: "change, disorganization",
+      wouldIncreaseEffectivenessThrough: "public discussion of their ideas; self-confidence based on feedback; shortcut methods",
+      generalDescription: "Specialists 'wear well' with others. With their controlled stance and modest manner, they are able to work well with a number of behavioral styles. Specialists are considerate, patient, and always willing to help those they consider friends. They build close relationships with a relatively small group of associates in the work environment. Their efforts are directed toward retaining familiar and predictable patterns. Most effective in specialized areas, Specialists plan their work along directed channels and achieve a remarkably consistent performance. Appreciation from others helps to maintain that level of consistency. Specialists are slow to adapt to change. Prior conditioning gives them time to change their procedures while maintaining a consistent level of performance. Specialists may need help to start new projects or develop shortcut methods to meet deadlines. Finished projects are often put aside for further revisions. Specialists should consider throwing away old files that have outlived their usefulness."
+    },
+    T1: {
+      name: "Tight",
+      generalDescription: "Before you go further, review your profile graph scores for the possibility of errors made when computing your responses or plotting your scores. A Tight Pattern occurs when all four plotting points are positioned in the middle third of the graph with only one segment difference between the four points. This indicates that the person considers all four behavioral traits to be of equal importance. As a result, the shape of the profile does not match any of the commonly occurring patterns. Classical Profile Patterns represent combinations of high and low plotting points, whereas the Tight Pattern has plotting points only in the middle range. When a Tight Pattern appears in Graph III, it may be helpful to retake the profile with a clearer focus."
+    },
+    U1: {
+      name: "Undershift",
+      generalDescription: "Before you go further, review your profile graph scores for the possibility of errors made when computing your responses or plotting your scores. An Undershift Pattern occurs when all four plotting points are positioned in the lower two-thirds of the graph. This indicates that the person considers all four behavioral types to be of equally low importance. As a result, the shape of the profile does not match any of the commonly occurring patterns. Classical Profile Patterns represent combinations of high and low plotting points, whereas the Undershift Pattern has low plotting points. When an Undershift Pattern appears in Graph III, it may be helpful to retake the profile with a clearer focus."
+    }
+  };
+  
+  export default patterns;
