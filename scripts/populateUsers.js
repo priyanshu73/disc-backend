@@ -13,6 +13,13 @@ async function populateUsers() {
   const connection = await mysql.createConnection(dbConfig);
   const csvPath = path.join(__dirname, 'dummy_users.csv');
 
+  // Insert two classes for 2025 (S and F) with instructor names if not exist
+  await connection.execute(`
+    INSERT IGNORE INTO class (class_year, semester, instructor) VALUES
+      (2025, 'S', 'Alice Smith'),
+      (2025, 'F', 'Bob Johnson')
+  `);
+
   // Hash the default password once
   const plainPassword = 'gettysburg2025';
   const hashedPassword = await bcrypt.hash(plainPassword, 10);
@@ -35,8 +42,8 @@ async function populateUsers() {
   // Process each user line
   for (let i = 1; i <= numUsers && i < lines.length; i++) {
     const line = lines[i];
-    const [firstname, lastname, username, class_year, semester] = line.split(',').map(s => s && s.trim());
-    if (!firstname || !lastname || !username || !class_year || !semester) {
+    const [firstname, lastname, username, class_id] = line.split(',').map(s => s && s.trim());
+    if (!firstname || !lastname || !username || !class_id) {
       console.warn('Skipping row due to missing data:', line);
       continue;
     }
@@ -44,9 +51,9 @@ async function populateUsers() {
     const hasReset = false;
     try {
       await connection.execute(
-        `INSERT INTO users (firstname, lastname, username, password, class_year, semester, hasReset)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [firstname, lastname, username, password, class_year, semester, hasReset]
+        `INSERT INTO users (firstname, lastname, username, password, class_id, hasReset)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [firstname, lastname, username, password, class_id, hasReset]
       );
       console.log(`Inserted user: ${username}`);
     } catch (err) {

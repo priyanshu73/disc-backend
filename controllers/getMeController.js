@@ -10,14 +10,17 @@ export async function getMe(req, res) {
   try {
     connection = await mysql.createConnection(dbConfig);
     const [rows] = await connection.execute(
-      'SELECT firstname, lastname, class_year, semester, hasReset FROM users WHERE user_id = ?',
+      `SELECT u.firstname, u.lastname, u.hasReset, c.class_year, c.semester, c.instructor
+       FROM users u
+       JOIN class c ON u.class_id = c.class_id
+       WHERE u.user_id = ?`,
       [user_id]
     );
     if (rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const { firstname, lastname, class_year, semester, hasReset } = rows[0];
-    res.json({ user: { user_id, username, firstname, lastname, class_year, semester, hasReset } });
+    const { firstname, lastname, hasReset, class_year, semester, instructor } = rows[0];
+    res.json({ user: { user_id, username, firstname, lastname, class_year, semester, instructor, hasReset } });
   } catch (err) {
     console.error('getMe error:', err.message);
     res.status(500).json({ message: 'Internal server error' });

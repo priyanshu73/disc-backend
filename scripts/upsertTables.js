@@ -32,7 +32,17 @@ async function upsertTables() {
       )
     `);
 
-    // Create users table
+    // Create class table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS class (
+        class_id INT AUTO_INCREMENT PRIMARY KEY,
+        class_year INT NOT NULL,
+        semester ENUM('S', 'F') NOT NULL,
+        instructor VARCHAR(100) NOT NULL
+      )
+    `);
+
+    // Create users table (normalized)
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS users (
         user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -40,11 +50,14 @@ async function upsertTables() {
         lastname VARCHAR(50) NOT NULL,
         username VARCHAR(50) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
-        class_year INT NOT NULL,
-        semester ENUM('SPRING', 'FALL') NOT NULL,
-        hasReset BOOLEAN NOT NULL DEFAULT FALSE
+        class_id INT NOT NULL,
+        hasReset BOOLEAN NOT NULL DEFAULT FALSE,
+        FOREIGN KEY (class_id) REFERENCES class(class_id)
       )
     `);
+
+    // Insert two classes for 2025 (S and F) with random instructor names
+    // Removed from upsertTables.js as per new structure
 
     console.log('Tables upserted successfully.');
   } catch (err) {
