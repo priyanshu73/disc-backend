@@ -32,15 +32,7 @@ async function upsertTables() {
       )
     `);
 
-    // Create class table
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS class (
-        class_id INT AUTO_INCREMENT PRIMARY KEY,
-        class_year INT NOT NULL,
-        semester ENUM('S', 'F') NOT NULL,
-        instructor VARCHAR(100) NOT NULL
-      )
-    `);
+ 
 
     // Create users table (normalized)
     await connection.execute(`
@@ -50,9 +42,28 @@ async function upsertTables() {
         lastname VARCHAR(50) NOT NULL,
         username VARCHAR(50) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
-        class_id INT NOT NULL,
         hasReset BOOLEAN NOT NULL DEFAULT FALSE,
-        FOREIGN KEY (class_id) REFERENCES class(class_id)
+        is_instructor BOOLEAN NOT NULL DEFAULT FALSE
+      )
+    `);
+
+       // Create class table
+       await connection.execute(`
+        CREATE TABLE IF NOT EXISTS class (
+          class_id INT AUTO_INCREMENT PRIMARY KEY,
+          class_year INT NOT NULL,
+          semester ENUM('S', 'F') NOT NULL
+        )
+      `);
+
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS class_students (
+        class_id INT NOT NULL,
+        student_id INT NOT NULL,
+        instructor_id INT NOT NULL,
+        FOREIGN KEY (class_id) REFERENCES class(class_id),
+        FOREIGN KEY (student_id) REFERENCES users(user_id),
+        FOREIGN KEY (instructor_id) REFERENCES users(user_id)
       )
     `);
 

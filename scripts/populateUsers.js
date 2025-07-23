@@ -13,56 +13,85 @@ async function populateUsers() {
   const connection = await mysql.createConnection(dbConfig);
   const csvPath = path.join(__dirname, 'dummy_users.csv');
 
-  // Insert two classes for 2025 (S and F) with instructor names if not exist
-  await connection.execute(`
-    INSERT IGNORE INTO class (class_year, semester, instructor) VALUES
-      (2025, 'S', 'Alice Smith'),
-      (2025, 'F', 'Bob Johnson')
-  `);
+  // 1. Insert two classes (2025 S, 2025 F) with fixed IDs 1 and 2
+  await connection.execute(
+    `INSERT INTO class (class_id, class_year, semester) VALUES (1, 2025, 'S') ON DUPLICATE KEY UPDATE class_id=class_id`
+  );
+  await connection.execute(
+    `INSERT INTO class (class_id, class_year, semester) VALUES (2, 2025, 'F') ON DUPLICATE KEY UPDATE class_id=class_id`
+  );
 
-  // Hash the default password once
+  // 2. Insert two instructors (auto-increment user_id)
+  const instructors = [
+    { firstname: 'Alice', lastname: 'Smith', username: 'alicesmith', class_id: 1 },
+    { firstname: 'Bob', lastname: 'Johnson', username: 'bobjohnson', class_id: 2 }
+  ];
   const plainPassword = 'gettysburg2025';
   const hashedPassword = await bcrypt.hash(plainPassword, 10);
+  const instructorIds = {}; // Map class_id to instructor user_id
 
-  // Read file as text
+  for (const inst of instructors) {
+    const [result] = await connection.execute(
+      `INSERT INTO users (firstname, lastname, username, password, hasReset, is_instructor)
+       VALUES (?, ?, ?, ?, FALSE, TRUE)
+       ON DUPLICATE KEY UPDATE user_id=LAST_INSERT_ID(user_id)`,
+      [inst.firstname, inst.lastname, inst.username, hashedPassword]
+    );
+    instructorIds[inst.class_id] = result.insertId;
+  }
+
+  // 3. Insert all students from CSV
   const fileContent = fs.readFileSync(csvPath, 'utf-8');
   const lines = fileContent.split(/\r?\n/).filter(Boolean);
   if (lines.length < 2) {
     console.error('CSV does not contain enough lines.');
     return;
   }
-
-  // First line: number of users
   const numUsers = parseInt(lines[0], 10);
   if (isNaN(numUsers) || numUsers <= 0) {
     console.error('First line of CSV must be a positive integer (number of users).');
     return;
   }
-
-  // Process each user line
+  const studentIds = [];
   for (let i = 1; i <= numUsers && i < lines.length; i++) {
     const line = lines[i];
-    const [firstname, lastname, username, class_id] = line.split(',').map(s => s && s.trim());
-    if (!firstname || !lastname || !username || !class_id) {
+    const [firstname, lastname, username, classNum] = line.split(',').map(s => s && s.trim());
+    if (!firstname || !lastname || !username || !classNum) {
       console.warn('Skipping row due to missing data:', line);
       continue;
     }
-    const password = hashedPassword;
-    const hasReset = false;
     try {
-      await connection.execute(
-        `INSERT INTO users (firstname, lastname, username, password, class_id, hasReset)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [firstname, lastname, username, password, class_id, hasReset]
+      const [result] = await connection.execute(
+        `INSERT INTO users (firstname, lastname, username, password, hasReset, is_instructor)
+         VALUES (?, ?, ?, ?, FALSE, FALSE)
+         ON DUPLICATE KEY UPDATE user_id=LAST_INSERT_ID(user_id)`,
+        [firstname, lastname, username, hashedPassword]
       );
-      console.log(`Inserted user: ${username}`);
+      studentIds.push({ user_id: result.insertId, class_id: parseInt(classNum, 10) });
     } catch (err) {
       console.error(`Error inserting user ${username}:`, err.message);
+      continue;
     }
   }
 
+  // 4. Populate class_students (link students and instructors to classes)
+  for (const student of studentIds) {
+    // Determine instructor_id by class_id
+    const instructor_id = instructorIds[student.class_id];
+    try {
+      await connection.execute(
+        `INSERT INTO class_students (class_id, student_id, instructor_id)
+         VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE class_id=class_id`,
+        [student.class_id, student.user_id, instructor_id]
+      );
+      console.log(`Linked student ${student.user_id} to class ${student.class_id} with instructor ${instructor_id}`);
+    } catch (err) {
+      console.error(`Error linking student ${student.user_id} to class:`, err.message);
+    }
+  }
   await connection.end();
-  console.log('User population complete.');
+  console.log('User and class population complete.');
 }
 
 populateUsers(); 

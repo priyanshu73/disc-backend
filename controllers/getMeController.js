@@ -9,18 +9,45 @@ export async function getMe(req, res) {
   let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
-    const [rows] = await connection.execute(
-      `SELECT u.firstname, u.lastname, u.hasReset, c.class_year, c.semester, c.instructor
-       FROM users u
-       JOIN class c ON u.class_id = c.class_id
-       WHERE u.user_id = ?`,
+    // First, get is_instructor and user info
+    const [userRows] = await connection.execute(
+      `SELECT is_instructor, firstname, lastname, hasReset FROM users WHERE user_id = ?`,
       [user_id]
     );
-    if (rows.length === 0) {
+    if (userRows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const { firstname, lastname, hasReset, class_year, semester, instructor } = rows[0];
-    res.json({ user: { user_id, username, firstname, lastname, class_year, semester, instructor, hasReset } });
+    const { is_instructor, firstname, lastname, hasReset } = userRows[0];
+
+    if (!is_instructor) {
+      // Student: get their class and instructor
+      const [rows] = await connection.execute(
+        `SELECT c.class_year, c.semester,
+                i.firstname AS instructor_firstname, i.lastname AS instructor_lastname
+         FROM class_students cs
+         JOIN class c ON cs.class_id = c.class_id
+         JOIN users i ON cs.instructor_id = i.user_id
+         WHERE cs.student_id = ?`,
+        [user_id]
+      );
+      if (rows.length === 0) {
+        return res.status(404).json({ message: 'Class not found for student' });
+      }
+      const { class_year, semester, instructor_firstname, instructor_lastname } = rows[0];
+      const instructor = `${instructor_firstname} ${instructor_lastname}`;
+      res.json({ user: { user_id, username, firstname, lastname, class_year, semester, instructor, is_instructor, hasReset } });
+    } else {
+      // Instructor: get all classes they teach
+      const [rows] = await connection.execute(
+        `SELECT c.class_id, c.class_year, c.semester
+         FROM class_students cs
+         JOIN class c ON cs.class_id = c.class_id
+         WHERE cs.instructor_id = ?
+         GROUP BY c.class_id, c.class_year, c.semester`,
+        [user_id]
+      );
+      res.json({ user: { user_id, username, firstname, lastname, is_instructor, classes: rows, hasReset } });
+    }
   } catch (err) {
     console.error('getMe error:', err.message);
     res.status(500).json({ message: 'Internal server error' });
