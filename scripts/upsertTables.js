@@ -8,7 +8,8 @@ async function upsertTables() {
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS patternTable (
         segno INT NOT NULL PRIMARY KEY,
-        pid CHAR(2)
+        pid CHAR(2),
+        FOREIGN KEY (pid) REFERENCES pattern(pid)
       )
     `);
 
@@ -88,6 +89,19 @@ async function upsertTables() {
 
     // Insert two classes for 2025 (S and F) with random instructor names
     // Removed from upsertTables.js as per new structure
+
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS results (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        classic_profile_pattern_id INT NOT NULL,
+        most_counts JSON NOT NULL,
+        least_counts JSON NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
+        FOREIGN KEY (classic_profile_pattern_id) REFERENCES ClassicProfilePatterns(id)
+      )
+    `);
 
     console.log('Tables upserted successfully.');
   } catch (err) {

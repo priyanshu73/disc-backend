@@ -48,7 +48,7 @@ const submitAnswers = async (req, res) => {
   let connection;
   try {
     const answers = req.body;
-  
+    const user_id = req.user.user_id;
 
     if (!answers || typeof answers !== 'object') {
       return res.status(400).json({ success: false, error: 'Invalid answers format' });
@@ -116,7 +116,6 @@ const submitAnswers = async (req, res) => {
 
     const mostCounts = countShapes(mostShapes);
     const leastCounts = countShapes(leastShapes);
-
     
     const diff = {
       Z: (mostCounts.Z || 0) - (leastCounts.Z || 0), // D
@@ -132,6 +131,38 @@ const submitAnswers = async (req, res) => {
       getSegment('S', diff.T),
       getSegment('C', diff['*'])
     ].join('');
+
+    // Store result in results table
+    // 1. Get pid from patternTable using segno (code)
+    const [patternTableRows] = await connection.execute(
+      'SELECT pid FROM patternTable WHERE segno = ? LIMIT 1',
+      [parseInt(code, 10)]
+    );
+    if (!patternTableRows.length) {
+      return res.status(500).json({ success: false, error: 'No matching patternTable entry for code/segno' });
+    }
+    const pid = patternTableRows[0].pid;
+    // 2. Get classic_profile_pattern_id from ClassicProfilePatterns using pid
+    const [cppRows] = await connection.execute(
+      'SELECT id FROM ClassicProfilePatterns WHERE pid = ? LIMIT 1',
+      [pid]
+    );
+    if (!cppRows.length) {
+      return res.status(500).json({ success: false, error: 'No matching ClassicProfilePatterns entry for pid' });
+    }
+    const classic_profile_pattern_id = cppRows[0].id;
+    // 3. Insert into results
+    const [result] = await connection.execute(
+      `INSERT INTO results (user_id, classic_profile_pattern_id, most_counts, least_counts)
+       VALUES (?, ?, ?, ?)`,
+      [
+        req.user.user_id,
+        classic_profile_pattern_id,
+        JSON.stringify(mostCounts),
+        JSON.stringify(leastCounts)
+      ]
+    );
+    console.log("one submission done", result);
 
     res.json({ 
       success: true, 

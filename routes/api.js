@@ -6,6 +6,8 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 import { getMe } from '../controllers/getMeController.js';
 import { changePassword } from '../controllers/changePasswordController.js';
 import { login } from '../controllers/loginController.js';
+import { getResults, getResultById } from '../controllers/resultsController.js';
+import { getInstructorInfo } from '../controllers/instructorController.js';
 
 const router = express.Router();
 
@@ -14,7 +16,7 @@ router.get('/hello', sampleController.sayHello);
 router.get('/test-db', testDbController.testDb);
 router.get('/adjectives', adjectivesController.getAllAdjectives);
 router.get('/disc-questions', adjectivesController.getDiscQuestions);
-router.post('/submit-answers', adjectivesController.submitAnswers);
+router.post('/submit-answers', authMiddleware, adjectivesController.submitAnswers);
 router.post('/login', login);
 router.get('/me', authMiddleware, getMe);
 router.post('/change-password', authMiddleware, changePassword);
@@ -26,5 +28,8 @@ router.post('/logout', (req, res) => {
   });
   res.json({ message: 'Logged out' });
 });
+router.get('/results', authMiddleware, getResults);
+router.get('/results/:id', authMiddleware, getResultById);
+router.get('/instructors/info', authMiddleware,getInstructorInfo);
 
 export default router; 

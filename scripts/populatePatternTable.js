@@ -4,7 +4,7 @@ import dbConfig from '../dbConfig.js';
 const data = [
   [1111, 'U1'],
   [1112, 'U1'],
-  [1113, 'U2'],
+  [1113, 'U1'],
   [1114, 'U1'],
   [1115, 'O1'],
   [1116, 'O1'],
@@ -53,7 +53,7 @@ const data = [
   [1177, 'P1'],
   [1211, 'U1'],
   [1212, 'U1'],
-  [1213, 'U2'],
+  [1213, 'U1'],
   [1214, 'U1'],
   [1215, 'O1'],
   [1216, 'O1'],
@@ -2282,7 +2282,7 @@ const data = [
   [7553, 'R1'],
   [7554, 'R1'],
   [7555, 'O2'],
-  [7556, 'O3'],
+  [7556, 'O2'],
   [7557, 'O2'],
   [7561, 'A1'],
   [7562, 'A1'],
@@ -2402,14 +2402,27 @@ const data = [
 async function populatePatternTable() {
   const connection = await mysql.createConnection(dbConfig);
   try {
-    await connection.execute(`CREATE TABLE IF NOT EXISTS patternTable (pid CHAR(2) PRIMARY KEY, pname VARCHAR(20) NOT NULL)`);
+    // Fetch all valid pids from pattern
+    const [patternRows] = await connection.query('SELECT pid FROM pattern');
+    const validPids = new Set(patternRows.map(row => row.pid));
+    const invalidPids = [];
+    for (const [segno, pid] of data) {
+      if (!validPids.has(pid)) {
+        invalidPids.push(pid);
+      }
+    }
+    if (invalidPids.length > 0) {
+      console.error('Invalid pids found in data:', Array.from(new Set(invalidPids)));
+      await connection.end();
+      return;
+    }
     await connection.query('DELETE FROM patternTable'); // Clear existing data
     await connection.query('INSERT INTO patternTable (segno, pid) VALUES ?', [data]);
     console.log('patternTable populated successfully.');
   } catch (err) {
     console.error('Error populating patternTable:', err.message);
   } finally {
-    await connection.end();
+    if (connection) await connection.end();
   }
 }
 
