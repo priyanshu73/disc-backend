@@ -1,26 +1,43 @@
 import mysql from 'mysql2/promise';
 import dbConfig from '../dbConfig.js';
-
-function formatTimeHM(dateString) {
-  const date = new Date(dateString);
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-}
+import { formatDateTime } from '../utils/dateUtils.js';
+import { isInstructor } from '../utils/is_instructor.js';
 
 export async function getResults(req, res) {
-  const user_id = req.user.user_id;
+  const current_user_id = req.user.user_id;
+  const student_id = req.query.student_id;
   let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
+    
+    // Check if current user is an instructor
+    const isInstructorUser = await isInstructor(current_user_id, connection);
+    
+    let target_user_id = current_user_id;
+    
+    // If instructor and student_id provided, verify they can access that student's results
+    if (isInstructorUser && student_id) {
+      const [classCheck] = await connection.execute(
+        'SELECT 1 FROM class_students WHERE instructor_id = ? AND student_id = ? LIMIT 1',
+        [current_user_id, student_id]
+      );
+      
+      if (classCheck.length === 0) {
+        return res.status(403).json({ error: 'Student not found in your classes' });
+      }
+      target_user_id = student_id;
+    } else if (isInstructorUser && !student_id) {
+      return res.status(400).json({ error: 'Student ID required for instructor access' });
+    }
+    
     const [rows] = await connection.execute(
       'SELECT id, created_at FROM results WHERE user_id = ? ORDER BY created_at DESC',
-      [user_id]
+      [target_user_id]
     );
-    // Format created_at to HH:mm
+    // Format created_at to full datetime
     const formatted = rows.map(r => ({
       id: r.id,
-      created_at: formatTimeHM(r.created_at)
+      created_at: formatDateTime(r.created_at)
     }));
     res.json({ results: formatted });
   } catch (err) {
@@ -31,11 +48,33 @@ export async function getResults(req, res) {
 }
 
 export async function getResultById(req, res) {
-  const user_id = req.user.user_id;
+  const current_user_id = req.user.user_id;
   const result_id = req.params.id;
+  const student_id = req.query.student_id;
   let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
+    
+    // Check if current user is an instructor
+    const isInstructorUser = await isInstructor(current_user_id, connection);
+    
+    let target_user_id = current_user_id;
+    
+    // If instructor and student_id provided, verify they can access that student's results
+    if (isInstructorUser && student_id) {
+      const [classCheck] = await connection.execute(
+        'SELECT 1 FROM class_students WHERE instructor_id = ? AND student_id = ? LIMIT 1',
+        [current_user_id, student_id]
+      );
+      
+      if (classCheck.length === 0) {
+        return res.status(403).json({ error: 'Student not found in your classes' });
+      }
+      target_user_id = student_id;
+    } else if (isInstructorUser && !student_id) {
+      return res.status(400).json({ error: 'Student ID required for instructor access' });
+    }
+    
     const [rows] = await connection.execute(
       `SELECT 
         r.id,
@@ -59,7 +98,7 @@ export async function getResultById(req, res) {
       JOIN ClassicProfilePatterns cpp ON r.classic_profile_pattern_id = cpp.id
       JOIN pattern p ON cpp.pid = p.pid
       WHERE r.id = ? AND r.user_id = ?`,
-      [result_id, user_id]
+      [result_id, target_user_id]
     );
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Result not found' });

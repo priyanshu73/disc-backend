@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import dbConfig from '../dbConfig.js';
+import { formatDateTime } from '../utils/dateUtils.js';
 
 export async function getInstructorInfo(req, res) {
   const user_id = req.user.user_id;
@@ -66,34 +67,30 @@ export async function getInstructorInfo(req, res) {
   }
 } 
 
-// Add this to your resultsController.js
+// Get results for all students taught by this instructor
 export async function getStudentResults(req, res) {
   const instructor_id = req.user.user_id;
-  const student_id = req.params.student_id;
   let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
     
-    // Verify the instructor is teaching this student
-    const [classCheck] = await connection.execute(
-      'SELECT 1 FROM class_students WHERE instructor_id = ? AND student_id = ? LIMIT 1',
-      [instructor_id, student_id]
-    );
-    
-    if (classCheck.length === 0) {
-      return res.status(403).json({ error: 'Student not found in your classes' });
-    }
-    
-    // Get all results for this student
+    // Get all results for students taught by this instructor
     const [rows] = await connection.execute(
-      'SELECT id, created_at FROM results WHERE user_id = ? ORDER BY created_at DESC',
-      [student_id]
+      `SELECT r.id, r.created_at, r.user_id, 
+              u.firstname, u.lastname, u.username
+       FROM results r
+       JOIN class_students cs ON r.user_id = cs.student_id
+       JOIN users u ON r.user_id = u.user_id
+       WHERE cs.instructor_id = ?
+       ORDER BY r.created_at DESC`,
+      [instructor_id]
     );
     
-    // Format created_at to HH:mm
+    // Format created_at to full datetime
     const formatted = rows.map(r => ({
       id: r.id,
-      created_at: formatTimeHM(r.created_at)
+      created_at: formatDateTime(r.created_at),
+      user_id: r.user_id
     }));
     
     res.json({ results: formatted });
