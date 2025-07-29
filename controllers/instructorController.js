@@ -7,6 +7,16 @@ export async function getInstructorInfo(req, res) {
   try {
     connection = await mysql.createConnection(dbConfig);
     
+    // Verify this user is an instructor
+    const [instructorCheck] = await connection.execute(
+      'SELECT 1 FROM instructors WHERE user_id = ? LIMIT 1',
+      [user_id]
+    );
+    
+    if (instructorCheck.length === 0) {
+      return res.status(403).json({ error: 'Access denied. Instructor only.' });
+    }
+    
     // Get all classes where this user is the instructor, along with students
     const [rows] = await connection.execute(
       `SELECT 
@@ -55,3 +65,41 @@ export async function getInstructorInfo(req, res) {
     if (connection) await connection.end();
   }
 } 
+
+// Add this to your resultsController.js
+export async function getStudentResults(req, res) {
+  const instructor_id = req.user.user_id;
+  const student_id = req.params.student_id;
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    
+    // Verify the instructor is teaching this student
+    const [classCheck] = await connection.execute(
+      'SELECT 1 FROM class_students WHERE instructor_id = ? AND student_id = ? LIMIT 1',
+      [instructor_id, student_id]
+    );
+    
+    if (classCheck.length === 0) {
+      return res.status(403).json({ error: 'Student not found in your classes' });
+    }
+    
+    // Get all results for this student
+    const [rows] = await connection.execute(
+      'SELECT id, created_at FROM results WHERE user_id = ? ORDER BY created_at DESC',
+      [student_id]
+    );
+    
+    // Format created_at to HH:mm
+    const formatted = rows.map(r => ({
+      id: r.id,
+      created_at: formatTimeHM(r.created_at)
+    }));
+    
+    res.json({ results: formatted });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  } finally {
+    if (connection) await connection.end();
+  }
+}

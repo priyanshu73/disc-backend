@@ -43,8 +43,14 @@ async function upsertTables() {
         lastname VARCHAR(50) NOT NULL,
         username VARCHAR(50) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
-        hasReset BOOLEAN NOT NULL DEFAULT FALSE,
-        is_instructor BOOLEAN NOT NULL DEFAULT FALSE
+        hasReset BOOLEAN NOT NULL DEFAULT FALSE
+      )
+    `);
+
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS instructors (
+        user_id INT PRIMARY KEY,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
       )
     `);
 

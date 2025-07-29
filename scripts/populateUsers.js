@@ -32,12 +32,18 @@ async function populateUsers() {
 
   for (const inst of instructors) {
     const [result] = await connection.execute(
-      `INSERT INTO users (firstname, lastname, username, password, hasReset, is_instructor)
-       VALUES (?, ?, ?, ?, FALSE, TRUE)
+      `INSERT INTO users (firstname, lastname, username, password, hasReset)
+       VALUES (?, ?, ?, ?, FALSE)
        ON DUPLICATE KEY UPDATE user_id=LAST_INSERT_ID(user_id)`,
       [inst.firstname, inst.lastname, inst.username, hashedPassword]
     );
     instructorIds[inst.class_id] = result.insertId;
+    
+    // Add instructor to instructors table
+    await connection.execute(
+      `INSERT INTO instructors (user_id) VALUES (?) ON DUPLICATE KEY UPDATE user_id=user_id`,
+      [result.insertId]
+    );
   }
 
   // 3. Insert all students from CSV
@@ -62,8 +68,8 @@ async function populateUsers() {
     }
     try {
       const [result] = await connection.execute(
-        `INSERT INTO users (firstname, lastname, username, password, hasReset, is_instructor)
-         VALUES (?, ?, ?, ?, FALSE, FALSE)
+        `INSERT INTO users (firstname, lastname, username, password, hasReset)
+         VALUES (?, ?, ?, ?, FALSE)
          ON DUPLICATE KEY UPDATE user_id=LAST_INSERT_ID(user_id)`,
         [firstname, lastname, username, hashedPassword]
       );

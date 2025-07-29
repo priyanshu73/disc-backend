@@ -9,15 +9,22 @@ export async function getMe(req, res) {
   let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
-    // First, get is_instructor and user info
+    // First, get user info
     const [userRows] = await connection.execute(
-      `SELECT is_instructor, firstname, lastname, hasReset FROM users WHERE user_id = ?`,
+      `SELECT firstname, lastname, hasReset FROM users WHERE user_id = ?`,
       [user_id]
     );
     if (userRows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const { is_instructor, firstname, lastname, hasReset } = userRows[0];
+    const { firstname, lastname, hasReset } = userRows[0];
+
+    // Check if user is an instructor
+    const [instructorCheck] = await connection.execute(
+      'SELECT 1 FROM instructors WHERE user_id = ? LIMIT 1',
+      [user_id]
+    );
+    const is_instructor = instructorCheck.length > 0;
 
     if (!is_instructor) {
       // Student: get their class and instructor

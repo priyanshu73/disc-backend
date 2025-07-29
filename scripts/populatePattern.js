@@ -25,7 +25,7 @@ const data = [
 async function populatePattern() {
   const connection = await mysql.createConnection(dbConfig);
   try {
-    await connection.execute(`CREATE TABLE IF NOT EXISTS pattern (pid CHAR(2) PRIMARY KEY, pname VARCHAR(20) NOT NULL)`);
+    await connection.execute(`CREATE TABLE IF NOT EXISTS patternTable (segno INT NOT NULL PRIMARY KEY,pid CHAR(2))`);
     await connection.query('DELETE FROM pattern'); // Clear existing data
     await connection.query('INSERT INTO pattern (pid, pname) VALUES ?', [data]);
     console.log('pattern table populated successfully.');
