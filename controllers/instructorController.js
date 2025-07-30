@@ -66,37 +66,3 @@ export async function getInstructorInfo(req, res) {
     if (connection) await connection.end();
   }
 } 
-
-// Get results for all students taught by this instructor
-export async function getStudentResults(req, res) {
-  const instructor_id = req.user.user_id;
-  let connection;
-  try {
-    connection = await mysql.createConnection(dbConfig);
-    
-    // Get all results for students taught by this instructor
-    const [rows] = await connection.execute(
-      `SELECT r.id, r.created_at, r.user_id, 
-              u.firstname, u.lastname, u.username
-       FROM results r
-       JOIN class_students cs ON r.user_id = cs.student_id
-       JOIN users u ON r.user_id = u.user_id
-       WHERE cs.instructor_id = ?
-       ORDER BY r.created_at DESC`,
-      [instructor_id]
-    );
-    
-    // Format created_at to full datetime
-    const formatted = rows.map(r => ({
-      id: r.id,
-      created_at: formatDateTime(r.created_at),
-      user_id: r.user_id
-    }));
-    
-    res.json({ results: formatted });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  } finally {
-    if (connection) await connection.end();
-  }
-}

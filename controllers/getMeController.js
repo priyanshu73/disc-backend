@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import dbConfig from '../dbConfig.js';
+import { isInstructor } from '../utils/is_instructor.js';
 
 export async function getMe(req, res) {
   if (!req.user) {
@@ -20,11 +21,7 @@ export async function getMe(req, res) {
     const { firstname, lastname, hasReset } = userRows[0];
 
     // Check if user is an instructor
-    const [instructorCheck] = await connection.execute(
-      'SELECT 1 FROM instructors WHERE user_id = ? LIMIT 1',
-      [user_id]
-    );
-    const is_instructor = instructorCheck.length > 0;
+    const is_instructor = await isInstructor(user_id, connection);
 
     if (!is_instructor) {
       // Student: get their class and instructor
