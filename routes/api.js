@@ -8,6 +8,7 @@ import { changePassword } from '../controllers/changePasswordController.js';
 import { login } from '../controllers/loginController.js';
 import { getResults, getResultById } from '../controllers/resultsController.js';
 import { getInstructorInfo } from '../controllers/instructorController.js';
+import { uploadStudents, upload } from '../controllers/uploadController.js';
 
 const router = express.Router();
 
@@ -31,5 +32,6 @@ router.post('/logout', (req, res) => {
 router.get('/results', authMiddleware, getResults);
 router.get('/results/:id', authMiddleware, getResultById);
 router.get('/instructors/info', authMiddleware,getInstructorInfo);
+router.post('/upload-students', authMiddleware, upload.single('file'), uploadStudents);
 
 export default router; 
