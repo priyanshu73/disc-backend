@@ -8,16 +8,6 @@ export async function getInstructorInfo(req, res) {
   try {
     connection = await mysql.createConnection(dbConfig);
     
-    // Verify this user is an instructor
-    const [instructorCheck] = await connection.execute(
-      'SELECT 1 FROM instructors WHERE user_id = ? LIMIT 1',
-      [user_id]
-    );
-    
-    if (instructorCheck.length === 0) {
-      return res.status(403).json({ error: 'Access denied. Instructor only.' });
-    }
-    
     // Get all classes where this user is the instructor, along with students
     const [rows] = await connection.execute(
       `SELECT 
@@ -61,6 +51,45 @@ export async function getInstructorInfo(req, res) {
 
     res.json({ classes });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  } finally {
+    if (connection) await connection.end();
+  }
+}
+
+export async function deleteStudents(req, res) {
+  const user_id = req.user.user_id;
+  const { studentIds } = req.body;
+  let connection;
+  
+  try {
+    connection = await mysql.createConnection(dbConfig);
+
+    // Validate input
+    if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
+      return res.status(400).json({ error: 'studentIds array is required and must not be empty' });
+    }
+
+    // Verify that all students belong to classes taught by this instructor
+    const placeholders = studentIds.map(() => '?').join(',');
+   
+
+
+    // Delete class_students entries for the specified students
+    const [result] = await connection.execute(
+      `DELETE FROM class_students 
+       WHERE instructor_id = ? AND student_id IN (${placeholders})`,
+      [user_id, ...studentIds]
+    );
+
+    res.json({ 
+      message: 'Students deleted successfully',
+      deletedCount: result.affectedRows,
+      deletedStudentIds: studentIds
+    });
+
+  } catch (err) {
+    console.error('Delete students error:', err);
     res.status(500).json({ error: err.message });
   } finally {
     if (connection) await connection.end();

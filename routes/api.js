@@ -3,11 +3,12 @@ import sampleController from '../controllers/sampleController.js';
 import testDbController from '../controllers/testDbController.js';
 import adjectivesController from '../controllers/adjectivesController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
+import { isInstructorMiddleware } from '../middleware/isInstructorMiddleware.js';
 import { getMe } from '../controllers/getMeController.js';
 import { changePassword } from '../controllers/changePasswordController.js';
 import { login } from '../controllers/loginController.js';
 import { getResults, getResultById } from '../controllers/resultsController.js';
-import { getInstructorInfo } from '../controllers/instructorController.js';
+import { getInstructorInfo, deleteStudents } from '../controllers/instructorController.js';
 import { uploadStudents, upload } from '../controllers/uploadController.js';
 
 const router = express.Router();
@@ -31,7 +32,8 @@ router.post('/logout', (req, res) => {
 });
 router.get('/results', authMiddleware, getResults);
 router.get('/results/:id', authMiddleware, getResultById);
-router.get('/instructors/info', authMiddleware,getInstructorInfo);
-router.post('/upload-students', authMiddleware, upload.single('file'), uploadStudents);
+router.get('/instructors/info', authMiddleware, isInstructorMiddleware, getInstructorInfo);
+router.post('/upload-students', authMiddleware, isInstructorMiddleware, upload.single('file'), uploadStudents);
+router.delete('/delete-students', authMiddleware, isInstructorMiddleware, deleteStudents);
 
 export default router; 

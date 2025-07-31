@@ -170,7 +170,8 @@ const submitAnswers = async (req, res) => {
         most: mostCounts,
         least: leastCounts,
         diff,
-        code
+        code,
+        resultId: result.insertId
       }
     });
 

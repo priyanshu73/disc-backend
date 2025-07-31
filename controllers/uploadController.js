@@ -4,7 +4,6 @@ import multer from 'multer';
 import csv from 'csv-parser';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
-import { isInstructor } from '../utils/is_instructor.js';
 
 // Configure multer for file upload
 const upload = multer({
@@ -28,11 +27,6 @@ export const uploadStudents = async (req, res) => {
   
   try {
     connection = await mysql.createConnection(dbConfig);
-    
-    const isInstructorUser = await isInstructor(user_id, connection);
-    if (!isInstructorUser) {
-      return res.status(403).json({ error: 'Access denied. Instructor only.' });
-    }
 
     // Check if file exists
     if (!req.file) {
@@ -80,15 +74,7 @@ export const uploadStudents = async (req, res) => {
       fs.createReadStream(req.file.path)
         .pipe(csv())
         .on('data', (data) => {
-          // FIX: Use bracket notation to access the properties with quotes
-          console.log('Raw data object keys:', Object.keys(data));
-          console.log('Raw data object:', JSON.stringify(data));
-          
-          // Test different ways of accessing the firstname field
-          console.log('data.firstname:', data.firstname);
-          console.log('data["firstname"]:', data["firstname"]);
-          console.log('data[\'firstname\']:', data['firstname']);
-          console.log('data[Object.keys(data)[0]]:', data[Object.keys(data)[0]]);
+         
           
           // Use the working approach - access by position in the keys array
           const keys = Object.keys(data);
@@ -139,20 +125,31 @@ export const uploadStudents = async (req, res) => {
           [student.username]
         );
 
+        let studentId;
         if (existingUser.length > 0) {
-          errors.push(`Username ${student.username} already exists`);
-          continue;
+          // Student already exists, use their existing user_id
+          studentId = existingUser[0].user_id;
+          
+          // Check if student is already in this class
+          const [existingClassStudent] = await connection.execute(
+            'SELECT 1 FROM class_students WHERE class_id = ? AND student_id = ? AND instructor_id = ?',
+            [classId, studentId, user_id]
+          );
+          
+          if (existingClassStudent.length > 0) {
+            errors.push(`Student ${student.username} is already in this class`);
+            continue;
+          }
+        } else {
+          // Student doesn't exist, create new user
+          const [userResult] = await connection.execute(
+            'INSERT INTO users (firstname, lastname, username, password, hasReset) VALUES (?, ?, ?, ?, FALSE)',
+            [student.firstname, student.lastname, student.username, hashedPassword]
+          );
+          studentId = userResult.insertId;
         }
 
-        // Insert user
-        const [userResult] = await connection.execute(
-          'INSERT INTO users (firstname, lastname, username, password, hasReset) VALUES (?, ?, ?, ?, FALSE)',
-          [student.firstname, student.lastname, student.username, hashedPassword]
-        );
-
-        const studentId = userResult.insertId;
-
-        // Link student to class
+        // Link student to class (whether they're new or existing)
         await connection.execute(
           'INSERT INTO class_students (class_id, student_id, instructor_id) VALUES (?, ?, ?)',
           [classId, studentId, user_id]
@@ -162,7 +159,8 @@ export const uploadStudents = async (req, res) => {
           user_id: studentId,
           firstname: student.firstname,
           lastname: student.lastname,
-          username: student.username
+          username: student.username,
+          is_existing_user: existingUser.length > 0
         });
 
       } catch (err) {
