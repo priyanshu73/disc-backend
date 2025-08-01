@@ -59,7 +59,7 @@ export async function getInstructorInfo(req, res) {
 
 export async function deleteStudents(req, res) {
   const user_id = req.user.user_id;
-  const { studentIds } = req.body;
+  const { studentIds, classId } = req.body;
   let connection;
   
   try {
@@ -70,22 +70,34 @@ export async function deleteStudents(req, res) {
       return res.status(400).json({ error: 'studentIds array is required and must not be empty' });
     }
 
-    // Verify that all students belong to classes taught by this instructor
+    if (!classId) {
+      return res.status(400).json({ error: 'classId is required' });
+    }
+
+    // Verify that all students belong to the specified class taught by this instructor
     const placeholders = studentIds.map(() => '?').join(',');
-   
+    const [studentCheck] = await connection.execute(
+      `SELECT student_id FROM class_students 
+       WHERE instructor_id = ? AND class_id = ? AND student_id IN (${placeholders})`,
+      [user_id, classId, ...studentIds]
+    );
 
+    if (studentCheck.length !== studentIds.length) {
+      return res.status(403).json({ error: 'Some students are not in the specified class or do not exist' });
+    }
 
-    // Delete class_students entries for the specified students
+    // Delete class_students entries for the specified students from the specified class
     const [result] = await connection.execute(
       `DELETE FROM class_students 
-       WHERE instructor_id = ? AND student_id IN (${placeholders})`,
-      [user_id, ...studentIds]
+       WHERE instructor_id = ? AND class_id = ? AND student_id IN (${placeholders})`,
+      [user_id, classId, ...studentIds]
     );
 
     res.json({ 
       message: 'Students deleted successfully',
       deletedCount: result.affectedRows,
-      deletedStudentIds: studentIds
+      deletedStudentIds: studentIds,
+      classId: classId
     });
 
   } catch (err) {
