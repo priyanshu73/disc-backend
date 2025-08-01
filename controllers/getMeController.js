@@ -35,7 +35,20 @@ export async function getMe(req, res) {
         [user_id]
       );
       if (rows.length === 0) {
-        return res.status(404).json({ message: 'Class not found for student' });
+          // Student exists but not enrolled in any classes
+  res.json({ 
+    user: { 
+      user_id, 
+      username, 
+      firstname, 
+      lastname, 
+      class_year: null, 
+      semester: null, 
+      instructor: null, 
+      is_instructor, 
+      hasReset 
+    } 
+  });
       }
       const { class_year, semester, instructor_firstname, instructor_lastname } = rows[0];
       const instructor = `${instructor_firstname} ${instructor_lastname}`;
