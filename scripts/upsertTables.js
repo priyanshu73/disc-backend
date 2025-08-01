@@ -5,6 +5,15 @@ async function upsertTables() {
   const connection = await mysql.createConnection(dbConfig);
   try {
     // Create patternTable
+    
+    // Create pattern
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS pattern (
+        pid CHAR(2) PRIMARY KEY,
+        pname VARCHAR(20) NOT NULL
+      )
+    `);
+    
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS patternTable (
         segno INT NOT NULL PRIMARY KEY,

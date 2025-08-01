@@ -2,7 +2,7 @@ const dbConfig = {
   host: 'localhost',
   user: 'root', 
   password: 'B@zing@73', 
-  database: 'disc_local',
+  database: 'disc_test',
   port: 3306,
 };
 
