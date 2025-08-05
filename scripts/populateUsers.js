@@ -15,10 +15,10 @@ async function populateUsers() {
 
   // 1. Insert two classes (2025 S, 2025 F) with fixed IDs 1 and 2
   await connection.execute(
-    `INSERT INTO class (class_id, class_year, semester) VALUES (1, 2025, 'S') ON DUPLICATE KEY UPDATE class_id=class_id`
+    `INSERT INTO class (class_id, class_year, semester, instructor_id) VALUES (1, 2025, 'S', 1) ON DUPLICATE KEY UPDATE class_id=class_id`
   );
   await connection.execute(
-    `INSERT INTO class (class_id, class_year, semester) VALUES (2, 2025, 'F') ON DUPLICATE KEY UPDATE class_id=class_id`
+    `INSERT INTO class (class_id, class_year, semester, instructor_id) VALUES (2, 2025, 'F', 2) ON DUPLICATE KEY UPDATE class_id=class_id`
   );
 
   // 2. Insert two instructors (auto-increment user_id)
@@ -80,18 +80,16 @@ async function populateUsers() {
     }
   }
 
-  // 4. Populate class_students (link students and instructors to classes)
+  // 4. Populate class_students (link students to classes)
   for (const student of studentIds) {
-    // Determine instructor_id by class_id
-    const instructor_id = instructorIds[student.class_id];
     try {
       await connection.execute(
-        `INSERT INTO class_students (class_id, student_id, instructor_id)
-         VALUES (?, ?, ?)
+        `INSERT INTO class_students (class_id, student_id)
+         VALUES (?, ?)
          ON DUPLICATE KEY UPDATE class_id=class_id`,
-        [student.class_id, student.user_id, instructor_id]
+        [student.class_id, student.user_id]
       );
-      console.log(`Linked student ${student.user_id} to class ${student.class_id} with instructor ${instructor_id}`);
+      console.log(`Linked student ${student.user_id} to class ${student.class_id}`);
     } catch (err) {
       console.error(`Error linking student ${student.user_id} to class:`, err.message);
     }

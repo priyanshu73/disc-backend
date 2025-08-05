@@ -131,7 +131,7 @@ const submitAnswers = async (req, res) => {
       getSegment('S', diff.T),
       getSegment('C', diff['*'])
     ].join('');
-
+    console.log("code", code, getSegment('D', diff.Z), getSegment('i', diff.S), getSegment('S', diff.T), getSegment('C', diff['*']));
     // Store result in results table
     // 1. Get pid from patternTable using segno (code)
     const [patternTableRows] = await connection.execute(

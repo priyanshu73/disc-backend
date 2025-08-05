@@ -8,8 +8,8 @@ async function populateInstructors() {
   try {
     // Define instructors
     const instructors = [
-      { firstname: 'Dr. Sarah', lastname: 'Wilson', username: 'sarahwilson' },
-      { firstname: 'Prof. Michael', lastname: 'Davis', username: 'michaeldavis' }
+      { firstname: 'Sunghee', lastname: ' Kim', username: 'sungheekim' },
+      { firstname: 'Ivaylo', lastname: 'Illinkin', username: 'ivayloillinkin' }
     ];
 
     const plainPassword = 'gettysburg2025';
