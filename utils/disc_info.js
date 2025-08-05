@@ -27,7 +27,7 @@ export const discRanges = {
     { min: -27, max: -5, segment: 1 },
   ],
   C: [
-    { min: 16, max: 24, segment: 7 },
+    { min: 6, max: 24, segment: 7 },
     { min: 3, max: 5, segment: 6 },
     { min: -0, max: 2, segment: 5 },
     { min: -2, max: -1, segment: 4 },

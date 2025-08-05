@@ -18,10 +18,10 @@ export async function getInstructorInfo(req, res) {
         s.firstname as student_firstname,
         s.lastname as student_lastname,
         s.username as student_username
-      FROM class_students cs
-      JOIN class c ON cs.class_id = c.class_id
+      FROM class c
+      JOIN class_students cs ON c.class_id = cs.class_id
       JOIN users s ON cs.student_id = s.user_id
-      WHERE cs.instructor_id = ?
+      WHERE c.instructor_id = ?
       ORDER BY c.class_year, c.semester, s.lastname, s.firstname`,
       [user_id]
     );
@@ -77,8 +77,9 @@ export async function deleteStudents(req, res) {
     // Verify that all students belong to the specified class taught by this instructor
     const placeholders = studentIds.map(() => '?').join(',');
     const [studentCheck] = await connection.execute(
-      `SELECT student_id FROM class_students 
-       WHERE instructor_id = ? AND class_id = ? AND student_id IN (${placeholders})`,
+      `SELECT cs.student_id FROM class_students cs
+       JOIN class c ON cs.class_id = c.class_id
+       WHERE c.instructor_id = ? AND c.class_id = ? AND cs.student_id IN (${placeholders})`,
       [user_id, classId, ...studentIds]
     );
 
@@ -88,8 +89,9 @@ export async function deleteStudents(req, res) {
 
     // Delete class_students entries for the specified students from the specified class
     const [result] = await connection.execute(
-      `DELETE FROM class_students 
-       WHERE instructor_id = ? AND class_id = ? AND student_id IN (${placeholders})`,
+      `DELETE cs FROM class_students cs
+       JOIN class c ON cs.class_id = c.class_id
+       WHERE c.instructor_id = ? AND c.class_id = ? AND cs.student_id IN (${placeholders})`,
       [user_id, classId, ...studentIds]
     );
 

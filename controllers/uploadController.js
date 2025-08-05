@@ -51,16 +51,16 @@ export const uploadStudents = async (req, res) => {
 
     // Check if class already exists, if not create it
     let [existingClass] = await connection.execute(
-      'SELECT class_id FROM class WHERE class_year = ? AND semester = ?',
-      [classYearInt, semester]
+      'SELECT class_id FROM class WHERE class_year = ? AND semester = ? AND instructor_id = ?',
+      [classYearInt, semester, user_id]
     );
 
     let classId;
     if (existingClass.length === 0) {
-      // Create new class
+      // Create new class with instructor_id
       const [result] = await connection.execute(
-        'INSERT INTO class (class_year, semester) VALUES (?, ?)',
-        [classYearInt, semester]
+        'INSERT INTO class (class_year, semester, instructor_id) VALUES (?, ?, ?)',
+        [classYearInt, semester, user_id]
       );
       classId = result.insertId;
     } else {
@@ -132,8 +132,8 @@ export const uploadStudents = async (req, res) => {
           
           // Check if student is already in this class
           const [existingClassStudent] = await connection.execute(
-            'SELECT 1 FROM class_students WHERE class_id = ? AND student_id = ? AND instructor_id = ?',
-            [classId, studentId, user_id]
+            'SELECT 1 FROM class_students WHERE class_id = ? AND student_id = ?',
+            [classId, studentId]
           );
           
           if (existingClassStudent.length > 0) {
@@ -151,8 +151,8 @@ export const uploadStudents = async (req, res) => {
 
         // Link student to class (whether they're new or existing)
         await connection.execute(
-          'INSERT INTO class_students (class_id, student_id, instructor_id) VALUES (?, ?, ?)',
-          [classId, studentId, user_id]
+          'INSERT INTO class_students (class_id, student_id) VALUES (?, ?)',
+          [classId, studentId]
         );
 
         insertedStudents.push({

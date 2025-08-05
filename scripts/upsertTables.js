@@ -4,9 +4,7 @@ import dbConfig from '../dbConfig.js';
 async function upsertTables() {
   const connection = await mysql.createConnection(dbConfig);
   try {
-    // Create patternTable
-    
-    // Create pattern
+    // Create pattern first (since patternTable references it)
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS pattern (
         pid CHAR(2) PRIMARY KEY,
@@ -14,19 +12,12 @@ async function upsertTables() {
       )
     `);
     
+    // Create patternTable (references pattern table)
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS patternTable (
         segno INT NOT NULL PRIMARY KEY,
         pid CHAR(2),
         FOREIGN KEY (pid) REFERENCES pattern(pid)
-      )
-    `);
-
-    // Create pattern
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS pattern (
-        pid CHAR(2) PRIMARY KEY,
-        pname VARCHAR(20) NOT NULL
       )
     `);
 
@@ -41,8 +32,6 @@ async function upsertTables() {
         INDEX idx_question_number (question_number)
       )
     `);
-
- 
 
     // Create users table (normalized)
     await connection.execute(`
@@ -63,23 +52,24 @@ async function upsertTables() {
       )
     `);
 
-       // Create class table
-       await connection.execute(`
-        CREATE TABLE IF NOT EXISTS class (
-          class_id INT AUTO_INCREMENT PRIMARY KEY,
-          class_year INT NOT NULL,
-          semester ENUM('S', 'F') NOT NULL
-        )
-      `);
+    // Create class table with instructor_id
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS class (
+        class_id INT AUTO_INCREMENT PRIMARY KEY,
+        class_year INT NOT NULL,
+        semester ENUM('S', 'F') NOT NULL,
+        instructor_id INT NOT NULL,
+        FOREIGN KEY (instructor_id) REFERENCES users(user_id)
+      )
+    `);
 
+    // Create class_students table (simplified - no instructor_id)
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS class_students (
         class_id INT NOT NULL,
         student_id INT NOT NULL,
-        instructor_id INT NOT NULL,
         FOREIGN KEY (class_id) REFERENCES class(class_id),
-        FOREIGN KEY (student_id) REFERENCES users(user_id),
-        FOREIGN KEY (instructor_id) REFERENCES users(user_id)
+        FOREIGN KEY (student_id) REFERENCES users(user_id)
       )
     `);
 
@@ -101,9 +91,6 @@ async function upsertTables() {
         FOREIGN KEY (pid) REFERENCES pattern(pid) ON DELETE RESTRICT ON UPDATE CASCADE
       )
     `);
-
-    // Insert two classes for 2025 (S and F) with random instructor names
-    // Removed from upsertTables.js as per new structure
 
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS results (

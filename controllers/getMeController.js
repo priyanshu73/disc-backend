@@ -30,37 +30,37 @@ export async function getMe(req, res) {
                 i.firstname AS instructor_firstname, i.lastname AS instructor_lastname
          FROM class_students cs
          JOIN class c ON cs.class_id = c.class_id
-         JOIN users i ON cs.instructor_id = i.user_id
+         JOIN users i ON c.instructor_id = i.user_id
          WHERE cs.student_id = ?`,
         [user_id]
       );
       if (rows.length === 0) {
-          // Student exists but not enrolled in any classes
-  res.json({ 
-    user: { 
-      user_id, 
-      username, 
-      firstname, 
-      lastname, 
-      class_year: null, 
-      semester: null, 
-      instructor: null, 
-      is_instructor, 
-      hasReset 
-    } 
-  });
+        // Student exists but not enrolled in any classes
+        res.json({ 
+          user: { 
+            user_id, 
+            username, 
+            firstname, 
+            lastname, 
+            class_year: null, 
+            semester: null, 
+            instructor: null, 
+            is_instructor, 
+            hasReset 
+          } 
+        });
+      } else {
+        const { class_year, semester, instructor_firstname, instructor_lastname } = rows[0];
+        const instructor = `${instructor_firstname} ${instructor_lastname}`;
+        res.json({ user: { user_id, username, firstname, lastname, class_year, semester, instructor, is_instructor, hasReset } });
       }
-      const { class_year, semester, instructor_firstname, instructor_lastname } = rows[0];
-      const instructor = `${instructor_firstname} ${instructor_lastname}`;
-      res.json({ user: { user_id, username, firstname, lastname, class_year, semester, instructor, is_instructor, hasReset } });
     } else {
       // Instructor: get all classes they teach
       const [rows] = await connection.execute(
-        `SELECT c.class_id, c.class_year, c.semester
-         FROM class_students cs
-         JOIN class c ON cs.class_id = c.class_id
-         WHERE cs.instructor_id = ?
-         GROUP BY c.class_id, c.class_year, c.semester`,
+        `SELECT class_id, class_year, semester
+         FROM class
+         WHERE instructor_id = ?
+         ORDER BY class_year, semester`,
         [user_id]
       );
       res.json({ user: { user_id, username, firstname, lastname, is_instructor, classes: rows, hasReset } });

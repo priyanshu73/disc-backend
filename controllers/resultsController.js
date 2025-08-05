@@ -18,7 +18,9 @@ export async function getResults(req, res) {
     // If instructor and student_id provided, verify they can access that student's results
     if (isInstructorUser && student_id) {
       const [classCheck] = await connection.execute(
-        'SELECT 1 FROM class_students WHERE instructor_id = ? AND student_id = ? LIMIT 1',
+        `SELECT 1 FROM class_students cs
+         JOIN class c ON cs.class_id = c.class_id
+         WHERE c.instructor_id = ? AND cs.student_id = ? LIMIT 1`,
         [current_user_id, student_id]
       );
       
@@ -63,7 +65,9 @@ export async function getResultById(req, res) {
     // If instructor and student_id provided, verify they can access that student's results
     if (isInstructorUser && student_id) {
       const [classCheck] = await connection.execute(
-        'SELECT 1 FROM class_students WHERE instructor_id = ? AND student_id = ? LIMIT 1',
+        `SELECT 1 FROM class_students cs
+         JOIN class c ON cs.class_id = c.class_id
+         WHERE c.instructor_id = ? AND cs.student_id = ? LIMIT 1`,
         [current_user_id, student_id]
       );
       
@@ -109,4 +113,4 @@ export async function getResultById(req, res) {
   } finally {
     if (connection) await connection.end();
   }
-} 
+}
