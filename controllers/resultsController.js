@@ -2,6 +2,7 @@ import mysql from 'mysql2/promise';
 import dbConfig from '../dbConfig.js';
 import { formatDateTime } from '../utils/dateUtils.js';
 import { isInstructor } from '../utils/is_instructor.js';
+import { getSegment } from '../utils/disc_info.js';
 
 export async function getResults(req, res) {
   const current_user_id = req.user.user_id;
@@ -107,7 +108,38 @@ export async function getResultById(req, res) {
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Result not found' });
     }
-    res.json({ result: rows[0] });
+    
+    // Calculate segno dynamically from stored counts
+    // Handle both string and object formats for JSON fields
+    const mostCounts = typeof rows[0].most_counts === 'string' 
+      ? JSON.parse(rows[0].most_counts) 
+      : rows[0].most_counts;
+    const leastCounts = typeof rows[0].least_counts === 'string' 
+      ? JSON.parse(rows[0].least_counts) 
+      : rows[0].least_counts;
+    
+    const diff = {
+      Z: (mostCounts.Z || 0) - (leastCounts.Z || 0), // D
+      S: (mostCounts.S || 0) - (leastCounts.S || 0), // i
+      T: (mostCounts.T || 0) - (leastCounts.T || 0), // S
+      '*': (mostCounts['*'] || 0) - (leastCounts['*'] || 0) // C
+    };
+    
+    const segno = [
+      getSegment('D', diff.Z),
+      getSegment('i', diff.S),
+      getSegment('S', diff.T),
+      getSegment('C', diff['*'])
+    ].join('');
+    
+    // Add calculated segno to the result
+    const result = {
+      ...rows[0],
+      segno: parseInt(segno, 10)
+    };
+    console.log("result", result);
+    
+    res.json({ result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   } finally {

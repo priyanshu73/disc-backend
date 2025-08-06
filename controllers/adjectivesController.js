@@ -69,6 +69,7 @@ const submitAnswers = async (req, res) => {
       };
     });
     
+    console.log("adjectiveMap", adjectiveMap);
     const mostShapes = [];
     const leastShapes = [];
     
@@ -91,11 +92,11 @@ const submitAnswers = async (req, res) => {
       
       const mostAdjective = adjectiveMap[answerMost];
       const leastAdjective = adjectiveMap[answerLeast];
-      
+      console.log("mostAdjective", mostAdjective,  "leastAdjective", leastAdjective, "answerMost", answerMost, "answerLeast", answerLeast);
       if (!mostAdjective || !leastAdjective) {
         return res.status(400).json({ 
           success: false, 
-          error: `Invalid adjective in question ${questionNum}` 
+          error: `Invalid adjective in question ${questionNum} ${mostAdjective} ${leastAdjective} ` 
         });
       }
 
@@ -156,7 +157,7 @@ const submitAnswers = async (req, res) => {
       `INSERT INTO results (user_id, classic_profile_pattern_id, most_counts, least_counts)
        VALUES (?, ?, ?, ?)`,
       [
-        req.user.user_id,
+        user_id,
         classic_profile_pattern_id,
         JSON.stringify(mostCounts),
         JSON.stringify(leastCounts)
