@@ -92,8 +92,7 @@ const submitAnswers = async (req, res) => {
       
       const mostAdjective = adjectiveMap[answerMost];
       const leastAdjective = adjectiveMap[answerLeast];
-      console.log("mostAdjective", mostAdjective,  "leastAdjective", leastAdjective, "answerMost", answerMost, "answerLeast", answerLeast);
-      if (!mostAdjective || !leastAdjective) {
+        if (!mostAdjective || !leastAdjective) {
         return res.status(400).json({ 
           success: false, 
           error: `Invalid adjective in question ${questionNum} ${mostAdjective} ${leastAdjective} ` 
@@ -132,7 +131,6 @@ const submitAnswers = async (req, res) => {
       getSegment('S', diff.T),
       getSegment('C', diff['*'])
     ].join('');
-    console.log("code", code, getSegment('D', diff.Z), getSegment('i', diff.S), getSegment('S', diff.T), getSegment('C', diff['*']));
     // Store result in results table
     // 1. Get pid from patternTable using segno (code)
     const [patternTableRows] = await connection.execute(
@@ -163,7 +161,7 @@ const submitAnswers = async (req, res) => {
         JSON.stringify(leastCounts)
       ]
     );
-    console.log("one submission done", result);
+   
 
     res.json({ 
       success: true, 

@@ -137,7 +137,7 @@ export async function getResultById(req, res) {
       ...rows[0],
       segno: parseInt(segno, 10)
     };
-    console.log("result", result);
+    
     
     res.json({ result });
   } catch (err) {
